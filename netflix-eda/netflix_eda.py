@@ -55,13 +55,55 @@ plt.xlabel("Year")
 plt.show()
 
 #3. Countries by the Amount of the Produces Content
+filtered_countries = netflix_df.set_index('title').country.str.split(', ', expand=True).stack().reset_index(level=1, drop=True);
+filtered_countries = filtered_countries[filtered_countries != 'Country Unavailable']
+plt.figure(figsize=(13,7))
+g = sns.countplot(y = filtered_countries, order=filtered_countries.value_counts().index[:15])
+plt.title('Top 15 Countries Contributor on Netflix')
+plt.xlabel('Titles')
+plt.ylabel('Country')
+plt.show()
 
 #4. Top Directors on Netflix
+filtered_directors = netflix_df[netflix_df.director != 'No Director'].set_index('title').director.str.split(', ', expand=True).stack().reset_index(level=1, drop=True)
+plt.figure(figsize=(13,7))
+plt.title('Top 10 Director Based on The Number of Titles')
+sns.countplot(y = filtered_directors, order=filtered_directors.value_counts().index[:10], palette='Blues')
+plt.show()
 
 #5. Top Genres on Netflix
+filtered_genres = netflix_df.set_index('title').listed_in.str.split(', ', expand=True).stack().reset_index(level=1, drop=True);
+
+plt.figure(figsize=(10,10))
+g = sns.countplot(y = filtered_genres, order=filtered_genres.value_counts().index[:20])
+plt.title('Top 20 Genres on Netflix')
+plt.xlabel('Titles')
+plt.ylabel('Genres')
+plt.show()
 
 #6. Amount of Content By Rating
+order = netflix_df.rating.unique()
+count_movies = netflix_movies_df.groupby('rating')['title'].count().reset_index()
+count_shows = netflix_shows_df.groupby('rating')['title'].count().reset_index()
+count_shows = count_shows.append([{"rating" : "NC-17", "title" : 0},{"rating" : "PG-13", "title" : 0},{"rating" : "UR", "title" : 0}], ignore_index=True)
+count_shows.sort_values(by="rating", ascending=True)
+plt.figure(figsize=(13,7))
+plt.title('Amount of Content by Rating (Movies vs TV Shows)')
+plt.bar(count_movies.rating, count_movies.title)
+plt.bar(count_movies.rating, count_shows.title, bottom=count_movies.title)
+plt.legend(['TV Shows', 'Movies'])
+plt.show()
 
-#7. Top Actor on Netflix
+#7. Top Actor TV Shows on Netflix
+filtered_cast_shows = netflix_shows_df[netflix_shows_df.cast != 'No Cast'].set_index('title').cast.str.split(', ', expand=True).stack().reset_index(level=1, drop=True)
+plt.figure(figsize=(13,7))
+plt.title('Top 10 Actor TV Shows Based on The Number of Titles')
+sns.countplot(y = filtered_cast_shows, order=filtered_cast_shows.value_counts().index[:10], palette='pastel')
+plt.show()
 
-#8. Movie Duration
+#top actor movies
+filtered_cast_movie = netflix_movies_df[netflix_movies_df.cast != 'No Cast'].set_index('title').cast.str.split(', ', expand=True).stack().reset_index(level=1, drop=True)
+plt.figure(figsize=(13,7))
+plt.title('Top 10 Actor Movies Based on The Number of Titles')
+sns.countplot(y = filtered_cast_movie, order=filtered_cast_movie.value_counts().index[:10], palette='pastel')
+plt.show()
