@@ -2,6 +2,7 @@ library(httr)
 library(dplyr)
 library(ggplot2)
 library(hrbrthemes)
+library(tidyr)
 
 resp <- GET("https://data.covid19.go.id/public/api/update.json")
 #header
@@ -16,6 +17,7 @@ names(covid_raw)
 covid_update <- covid_raw$update
 
 lapply(covid_update,names)
+#last updated data for 
 covid_update$penambahan$tanggal
 covid_update$penambahan$jumlah_sembuh
 covid_update$penambahan$jumlah_meninggal
@@ -47,14 +49,77 @@ new_covid_df <-
 head(new_covid_df)
 
 ggplot(new_covid_df, aes(date, cases$value)) +
-  geom_col(fill = "salmon") +
+  geom_col(fill = "#FF0033") +
   labs(
     x = NULL,
     y = "Total Cases",
-    title = "Total Cases COVID-19 in Indonesia",
+    title = "Total Positif Cases COVID-19 in Indonesia",
     caption = "Source: covid.19.go.id"
   ) +
   theme(plot.title.position = "plot")
 
+ggplot(new_covid_df, aes(date, healed$value)) +
+  geom_col(fill = "#0099FF") +
+  labs(
+    x = NULL,
+    y = "Total Recovered",
+    title = "Total Recovered from COVID-19 in Indonesia",
+    caption = "Source: covid.19.go.id"
+  ) +
+  theme(plot.title.position = "plot")
 
+ggplot(new_covid_df, aes(date, deaths$value)) +
+  geom_col(fill = "#000033") +
+  labs(
+    x = NULL,
+    y = "Total Death Cases",
+    title = "Total Death Cases from COVID-19 in Indonesia",
+    caption = "Source: covid.19.go.id"
+  ) +
+  theme(plot.title.position = "plot")
 
+covid_sum <- 
+  new_covid_df %>% 
+  transmute(
+    date,
+    sum_active = cumsum(cases$value) - cumsum(healed$value) - cumsum(deaths$value),
+    sum_recovered = cumsum(healed$value),
+    sum_death = cumsum(deaths$value)
+  )
+
+tail(covid_sum)
+
+covid_sum_pivot <- 
+  covid_sum %>% 
+  gather(
+    key = "category",
+    value = "total",
+    -date
+  ) %>% 
+  mutate(
+    category = sub(pattern = "sum_", replacement = "", category)
+  )
+glimpse(covid_sum_pivot)
+
+ggplot(covid_sum_pivot,aes(date,total,colour=(category))) +
+  geom_line(size=0.9) +
+  scale_y_continuous(sec.axis = dup_axis(name = NULL)) +
+  scale_colour_manual(
+    values = c(
+      "active" = "#FF0033",
+      "death" = "#000033",
+      "recovered" = "#0099FF"
+    ),
+    labels = c("Active Cases","Death Cases","Recovered Cases")
+  ) +
+  labs(
+    x = NULL,
+    y = "Total Cases",
+    colour = NULL,
+    title = "Dynamics of COVID-19 Cases in Indonesia",
+    caption = "Source data: covid.19.go.id"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
