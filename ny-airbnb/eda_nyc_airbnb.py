@@ -21,3 +21,15 @@ print(nyc_df.head())
 #replacing all NaN values in 'reviews_per_month' with 0
 nyc_df.reviews_per_month.fillna(0, inplace=True)
 print(nyc_df.isnull().any())
+
+#Neighbourhood Group
+
+#Neighbourhood
+
+#Availability Room
+
+#Neighbourhood Group vs. Availability Room
+
+#Room Type
+
+#Price Varies vs. Area
