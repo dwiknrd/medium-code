@@ -23,13 +23,56 @@ nyc_df.reviews_per_month.fillna(0, inplace=True)
 print(nyc_df.isnull().any())
 
 #Neighbourhood Group
+plt.style.use('fivethirtyeight')
+plt.figure(figsize=(13,7))
+plt.title("Neighbourhood Group")
+g = plt.pie(nyc_df.neighbourhood_group.value_counts(), labels=nyc_df.neighbourhood_group.value_counts().index,autopct='%1.1f%%', startangle=180)
+plt.show()
 
-#Neighbourhood
+#Map of neighbourhood group
+plt.figure(figsize=(13,7))
+plt.title("Map of Neighbourhood Group")
+sns.scatterplot(nyc_df.longitude,nyc_df.latitude,hue=nyc_df.neighbourhood_group)
+plt.ioff()
+plt.show()
 
-#Availability Room
+#Room type
+plt.figure(figsize=(13,7))
+plt.title("Type of Room")
+sns.countplot(nyc_df.room_type, palette="muted")
+fig = plt.gcf()
+plt.show()
+
+plt.figure(figsize=(13,7))
+plt.title("Room Type on Neighbourhood Group")
+sns.countplot(nyc_df.neighbourhood_group,hue=nyc_df.room_type, palette="muted")
+plt.show()
 
 #Neighbourhood Group vs. Availability Room
+plt.style.use('classic')
+plt.figure(figsize=(13,7))
+plt.title("Neighbourhood Group vs. Availability Room")
+sns.boxplot(data=nyc_df, x='neighbourhood_group',y='availability_365',palette="dark")
+plt.show()
 
-#Room Type
-
+#Neighbourhood Group Price Distribution
 #Price Varies vs. Area
+plt.figure(figsize=(13,7))
+plt.title("Map of Price Distribution")
+ax=nyc_df[nyc_df.price<500].plot(kind='scatter', x='longitude',y='latitude',label='availability_365',c='price',cmap=plt.get_cmap('jet'),colorbar=True,alpha=0.4)
+ax.legend()
+plt.ioff()
+plt.show()
+
+plt.style.use('classic')
+plt.figure(figsize=(13,7))
+plt.title("Neighbourhood Group Price Distribution < 500")
+sns.boxplot(y="price",x ='neighbourhood_group' ,data = nyc_df[nyc_df.price<500])
+plt.show()
+
+#correlation
+corr = nyc_df.corr(method='kendall')
+plt.figure(figsize=(13,10))
+plt.title("Correlation Between Different Variables\n")
+sns.heatmap(corr, annot=True)
+plt.show()
