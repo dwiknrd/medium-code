@@ -41,6 +41,18 @@ df_covid_denormalized['fatality_ratio'] = df_covid_denormalized['deaths']/df_cov
 #top 20 country high fatality
 df_top_20_fatality_rate = df_covid_denormalized.sort_values(by='fatality_ratio', ascending=False).head(20)
 
+#visualisation
+import matplotlib.pyplot as plt
+plt.figure(figsize=(20, 8))
+x = df_top_20_fatality_rate['name']
+y = df_top_20_fatality_rate['fatality_ratio']
+plt.bar(x,y)
+plt.xlabel('Country Name')
+plt.ylabel('Fatality Rate')
+plt.title('Top 20 Highest Fatality Rate Countries')
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.show()
 
 ##3. 
 
