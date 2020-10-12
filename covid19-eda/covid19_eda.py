@@ -14,7 +14,7 @@ def get_json(api_url):
 		return None
 
 #called api function
-record_date = '2020-08-17'
+record_date = '2020-10-12'
 covid_url = 'https://covid19-api.org/api/status?date='+record_date
 df_covid_worldwide = pd.io.json.json_normalize(get_json(covid_url))
 
@@ -35,6 +35,7 @@ df_covid_denormalized = pd.merge(df_covid_worldwide, df_countries, on='country')
 #EDA
 ##1. Cases in continent
 
+
 ##2. Fatality Ratio
 #add "fatality_ratio" featured
 df_covid_denormalized['fatality_ratio'] = df_covid_denormalized['deaths']/df_covid_denormalized['cases']
@@ -43,7 +44,7 @@ df_top_20_fatality_rate = df_covid_denormalized.sort_values(by='fatality_ratio',
 
 #visualisation
 import matplotlib.pyplot as plt
-plt.figure(figsize=(20, 8))
+plt.figure(figsize=(17, 7))
 x = df_top_20_fatality_rate['name']
 y = df_top_20_fatality_rate['fatality_ratio']
 plt.bar(x,y)
