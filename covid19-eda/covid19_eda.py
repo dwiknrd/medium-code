@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import requests
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import datetime
 
 import plotly.graph_objects as go
@@ -57,7 +58,6 @@ plt.xticks(rotation=45)
 plt.hlines(y=y, xmin=0, xmax=x, color='indianred', alpha=0.8, linewidth=10)
 plt.plot(x, y, "o", markersize=8, color='#007acc', alpha=0.8)
 plt.tight_layout()
-plt.show()
 
 ##2. Cases in continent
 countries_df = pd.read_csv("countries.csv")
@@ -69,7 +69,6 @@ continent_case = covid_df.groupby('continent')['cases'].sum()
 plt.figure(figsize=(13,7))
 plt.title("Percentage of Confirmed Cases on Each Continent")
 g = plt.pie(continent_case, labels=continent_case.index,autopct='%1.1f%%', startangle=180)
-plt.show()
 
 ##3. Mortality Rate
 
@@ -81,9 +80,41 @@ y = covid_mortality_top_20['name']
 x = covid_mortality_top_20['mortality_rate']
 plt.ylabel('Country Name')
 plt.xlabel('Mortality Rate')
-plt.title('Top 20 Highest Fatality Rate Countries')
+plt.title('Top 20 Highest Mortality Rate Countries')
 plt.xticks(rotation=45)
 plt.hlines(y=y, xmin=0, xmax=x, color='darkblue', alpha=0.8, linewidth=10)
 plt.plot(x, y, "o", markersize=8, color='#007acc', alpha=0.8)
+plt.tight_layout()
+#plt.show()
+
+##4. recovered cases
+covid_df["recovered_rate"] = round((covid_df['recovered']/covid_df['cases'])*100,2)
+covid_recovered_top_20 = covid_df.sort_values(by='recovered_rate', ascending=False).head(20)
+
+plt.figure(figsize=(15, 7))
+y = covid_recovered_top_20['name']
+x = covid_recovered_top_20['recovered_rate']
+plt.ylabel('Country Name')
+plt.xlabel('Recovered Rate')
+plt.title('Top 20 Highest Recovered Rate Countries')
+plt.xticks(rotation=45)
+plt.hlines(y=y, xmin=0, xmax=x, color='dodgerblue', alpha=0.8, linewidth=10)
+plt.plot(x, y, "o", markersize=8, color='#007acc', alpha=0.8)
+plt.tight_layout()
+#plt.show()
+
+#called another API
+timeline_url = 'https://covid19-api.org/api/timeline'
+covid_timeline_df = pd.io.json.json_normalize(get_json(timeline_url))
+
+covid_timeline_df['last_update'] = pd.to_datetime(covid_timeline_df['last_update'], format='%Y-%m-%d %H:%M:%S')
+covid_timeline_df['last_update'] = covid_timeline_df['last_update'].apply(lambda x: x.date())
+
+plt.clf()
+fig, ax = plt.subplots(figsize=(15,7))
+covid_timeline_df.plot(x='last_update', kind='line', ax=ax, lw=3, color=['salmon', 'slategrey','olivedrab'])
+ax.set_title("Dynamic COVID-19 Cases")
+ax.set_xlabel('')
+plt.grid()
 plt.tight_layout()
 plt.show()
