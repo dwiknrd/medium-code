@@ -1,23 +1,25 @@
 #import library
 import pandas as pd
-import requests
+import dryscrape
 from bs4 import BeautifulSoup
 
-#make request to the website
-website_url = requests.get('https://en.wikipedia.org/wiki/List_of_Nobel_laureates_in_Physics').text
-soup = BeautifulSoup(website_url, 'lxml')
+dryscrape.start_xvfb()
+pages = range(1,2)
+for page in pages:
+    url = "https://shopee.co.id/Sepatu-Pria-cat.35?page={}".format(page)
+    session = dryscrape.Session(base_url = 'http://google.com')
+    # html = session.visit(url)
+    # response = session.body()
+    # soup = BeautifulSoup(response)
+    # print(soup)
+    # print("halooww")
+    #shoes = soup.find_all("div", "col-xs-2-4 shopee-search-item-result__item")
+    # print(len(shoes))
 
-#take table with class named 'wikitable sortable'
-my_table = soup.find('table', {'class':'wikitable sortable'})
+    # for shoe in shoes:
+    #     name = shoe.find("div", "_1NoI8_ _16BAGk").text
+    #     price = shoe.find("span", "_341bF0").text
 
-#searh data
+    #     print(name)
+    #     print(price)
 
-
-#make an empty list
-
-
-# enter the data to the list
-
-
-
-#make a dataframe and extrat to csv file
