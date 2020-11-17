@@ -1,25 +1,42 @@
 #import library
 import pandas as pd
-import dryscrape
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
+import time
 
-dryscrape.start_xvfb()
-pages = range(1,2)
+pages = [1]
 for page in pages:
-    url = "https://shopee.co.id/Sepatu-Pria-cat.35?page={}".format(page)
-    session = dryscrape.Session(base_url = 'http://google.com')
-    # html = session.visit(url)
-    # response = session.body()
-    # soup = BeautifulSoup(response)
-    # print(soup)
-    # print("halooww")
-    #shoes = soup.find_all("div", "col-xs-2-4 shopee-search-item-result__item")
-    # print(len(shoes))
+    url = "https://shopee.sg/Men's-Shoes-cat.168?page={}".format(page)
+    driver = webdriver.Firefox(executable_path='/Users/macbook/Desktop/geckodriver/geckodriver')
+    driver.implicitly_wait(30)
+    driver.get(url)
+    y = 1000
+    for timer in range(0,20):
+         driver.execute_script("window.scrollTo(0, "+str(y)+")")
+         y += 1000  
+         time.sleep(1)
 
-    # for shoe in shoes:
-    #     name = shoe.find("div", "_1NoI8_ _16BAGk").text
-    #     price = shoe.find("span", "_341bF0").text
 
-    #     print(name)
-    #     print(price)
+    soup = BeautifulSoup(driver.page_source, "lxml")
+
+    shoes = soup.find_all("div", "_1gkBDw")
+    
+
+    product_name = []
+    product_price = []
+
+    for shoe in shoes:
+        name = shoe.find("div", "O6wiAW").text
+        price = shoe.find("span", "_341bF0").text
+        product_name.append(name)
+        product_price.append(price)
+        
+
+    product = {"name": product_name, "price": product_price}
+    product_df = pd.DataFrame(product, columns = ["name","price"])
+
+    product_df.to_csv("men_shoes.csv")
+
+    driver.close()
 
